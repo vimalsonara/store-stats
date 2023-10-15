@@ -1,9 +1,10 @@
+import NextAuth from "next-auth";
+import type { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import connectDB from "@/lib/db";
 import User from "@/models/user";
-import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID ?? "",
@@ -13,19 +14,17 @@ export const authOptions = {
   callbacks: {
     async session({ session }) {
       const sessionUser = await User.findOne({ email: session.user.email });
-      session.user.id = sessionUser._id;
+      session.user.id = sessionUser._id.toString();
       return session;
     },
     async signIn({ profile }) {
-      console.log(profile);
       try {
         await connectDB();
-
-        const userExist = await User.findOne({ email: profile.email });
+        const userExist = await User.findOne({ email: profile?.email });
         if (!userExist) {
           const user = await User.create({
-            email: profile.email,
-            name: profile.name,
+            email: profile?.email,
+            name: profile?.name,
           });
         }
         return true;
