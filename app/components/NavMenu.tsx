@@ -7,8 +7,21 @@ function AuthButton() {
   if (session) {
     return (
       <>
-        {session?.user?.name} <br />
-        <button onClick={() => signOut()}>Sign out</button>
+        <ul className="flex gap-2 justify-around border-b-2 p-2">
+          <li>{session?.user?.name}</li>
+          <li>
+            <Link href={"/"}>Dashboard</Link>
+          </li>
+          <li>
+            <Link href={"/vendor/create"}>Add Vendor</Link>
+          </li>
+          <li>
+            <Link href={"/product/create"}>Add Product</Link>
+          </li>
+          <li>
+            <button onClick={() => signOut()}>Sign out</button>
+          </li>
+        </ul>
       </>
     );
   }
