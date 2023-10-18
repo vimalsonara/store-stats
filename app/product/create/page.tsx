@@ -10,7 +10,7 @@ type Inputs = {
   product: string;
 };
 
-export default function page() {
+export default function CreateProduct() {
   const router = useRouter();
 
   const { data: session } = useSession();

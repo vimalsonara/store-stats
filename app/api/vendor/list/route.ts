@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       const vendorList = await Vendor.find({ userId });
 
       if (vendorList.length > 0) {
-        return NextResponse.json(vendorList, { status: 201 });
+        return NextResponse.json(vendorList, { status: 200 });
       } else {
         return NextResponse.json({ error: "No vendor found" }, { status: 404 });
       }

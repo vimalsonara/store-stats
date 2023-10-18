@@ -11,7 +11,7 @@ type Inputs = {
   mobile: string;
 };
 
-export default function page() {
+export default function CreateVendor() {
   const router = useRouter();
 
   const { data: session } = useSession();

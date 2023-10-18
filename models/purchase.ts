@@ -26,6 +26,7 @@ const purchaseModel = new mongoose.Schema(
     items: {
       type: [
         {
+          itemId: String,
           itemName: String,
           quantity: Number,
           price: Number,
