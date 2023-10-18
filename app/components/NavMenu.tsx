@@ -8,7 +8,6 @@ function AuthButton() {
     return (
       <>
         <ul className="flex gap-2 justify-around border-b-2 p-2">
-          <li>{session?.user?.name}</li>
           <li>
             <Link href={"/"}>Dashboard</Link>
           </li>
@@ -17,6 +16,9 @@ function AuthButton() {
           </li>
           <li>
             <Link href={"/product/create"}>Add Product</Link>
+          </li>
+          <li>
+            <Link href={"/purchaseEntry/add"}>New Purchase</Link>
           </li>
           <li>
             <button onClick={() => signOut()}>Sign out</button>
