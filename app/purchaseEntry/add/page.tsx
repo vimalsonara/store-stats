@@ -111,22 +111,34 @@ export default function PurchaseEntry() {
           {...register("date", { required: true })}
         />
         {errors.date && <span className="text-red-500">Date required</span>}
-        <select {...register("vendorId")} className="text-black">
+        <select
+          {...register("vendorId", { required: true })}
+          className={
+            errors.vendorId
+              ? "border-2 border-red-500 rounded p-1 outline-none"
+              : "rounded p-1 outline-none text-black"
+          }
+        >
+          <option value="">Select</option>
           {vendorList.map((vendor) => (
             <option key={vendor._id} value={vendor._id}>
               {vendor.vendorName}
             </option>
           ))}
         </select>
+        {errors.vendorId && (
+          <span className="text-red-500">Vendor required</span>
+        )}
+
         {fields.map((item, index) => (
-          <div key={item.id}>
+          <div key={item.id} className="flex gap-2 flex-wrap">
             <select
               {...register(`items.${index}.itemId`)}
-              className="text-black"
+              className={"rounded p-1 outline-none text-black"}
             >
               <option value="">Select</option>
               {productList.map((product) => (
-                <option key={product._id} value={product._id}>
+                <option key={product._id} value={product.product}>
                   {product.product}
                 </option>
               ))}
@@ -134,21 +146,38 @@ export default function PurchaseEntry() {
             <input
               type="number"
               placeholder="Quantity"
-              className="text-black"
+              step="1"
+              min="1"
+              className={"rounded p-1 outline-none text-black"}
               {...register(`items.${index}.quantity`, { required: true })}
             />
             <input
               type="number"
-              step="0.01"
+              step="1"
+              min="1"
               placeholder="Price"
-              className="text-black"
+              className={"rounded p-1 outline-none text-black"}
               {...register(`items.${index}.price`, { required: true })}
             />
-            {index > 0 && <button onClick={() => remove(index)}>Remove</button>}
+            {index > 0 && (
+              <button
+                className="bg-red-500  p-1 rounded-md"
+                onClick={() => remove(index)}
+              >
+                Remove
+              </button>
+            )}
           </div>
         ))}
-        <button onClick={() => append({})}>Add Item</button>
-        <input type="submit" />
+        <div className="flex justify-center items-center gap-2">
+          <button
+            className="bg-blue-500 p-1 rounded-md"
+            onClick={() => append({})}
+          >
+            Add Item
+          </button>
+          <input className="bg-green-500 p-1 rounded-md" type="submit" />
+        </div>
       </form>
     </div>
   );
