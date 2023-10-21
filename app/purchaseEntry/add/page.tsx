@@ -28,6 +28,7 @@ type Inputs = {
   date: string;
   userId: string;
   vendorId: string;
+  vendorName: string;
   items: Item[];
 };
 
@@ -36,6 +37,7 @@ export default function PurchaseEntry() {
   const { data: session } = useSession();
   const [vendorList, setVendorList] = useState<Vendor[]>([]);
   const [productList, setProductList] = useState<Product[]>([]);
+  const [selectedVendorName, setSelectedVendorName] = useState("");
   const [productCount, setProductCount] = useState([0]);
 
   useEffect(() => {
@@ -81,6 +83,7 @@ export default function PurchaseEntry() {
         date: data.date,
         userId: session?.user.id,
         vendorId: data.vendorId,
+        vendorName: selectedVendorName,
         items: data.items,
       });
       if (response.status === 201) {
@@ -118,6 +121,13 @@ export default function PurchaseEntry() {
               ? "border-2 border-red-500 rounded p-1 outline-none"
               : "rounded p-1 outline-none text-black"
           }
+          onChange={(e) => {
+            const selectedVendorId = e.target.value;
+            const selectedVendor = vendorList.find(
+              (vendor) => vendor._id === selectedVendorId
+            );
+            setSelectedVendorName(selectedVendor?.vendorName || "");
+          }}
         >
           <option value="">Select</option>
           {vendorList.map((vendor) => (

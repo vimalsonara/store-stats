@@ -23,6 +23,10 @@ const purchaseModel = new mongoose.Schema(
       ref: "Vendors",
       required: true,
     },
+    vendorName: {
+      type: String,
+      required: true,
+    },
     items: {
       type: [
         {
