@@ -50,18 +50,18 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// list purchase by vendor id
+// get purchase by id
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (session) {
     try {
       const { searchParams } = new URL(req.url);
-      const vendorId = searchParams.get("id");
+      const purchaseId = searchParams.get("id");
 
-      const listPurchasebyVendorId = await PurchaseEntry.find({ vendorId });
+      const purchase = await PurchaseEntry.find({ _id: purchaseId });
 
-      if (listPurchasebyVendorId.length > 0) {
-        return NextResponse.json(listPurchasebyVendorId, { status: 200 });
+      if (purchase) {
+        return NextResponse.json(purchase, { status: 200 });
       } else {
         return NextResponse.json(
           { error: "No purchase found" },

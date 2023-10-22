@@ -25,7 +25,7 @@ export const columns: ColumnDef<Vendor>[] = [
       const vendor = row.original;
 
       return (
-        <Link href={`/purchase/${vendor._id}`}>
+        <Link href={`/vendor/purchase/${vendor._id}`}>
           <button className="bg-blue-500 py-1 px-2 rounded-md hover:bg-blue-800">
             View
           </button>
