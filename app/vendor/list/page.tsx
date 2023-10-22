@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import DataTable from "../../components/dataTable";
 import { columns } from "./columns";
+import Link from "next/link";
 
 interface Vendor {
   _id: string;
@@ -33,5 +34,16 @@ export default function VendorList() {
     }
   }, [session]);
   console.log(vendorList);
-  return <DataTable columns={columns} data={vendorList} />;
+  return (
+    <div>
+      <div>
+        <ul className="flex gap-2 justify-around p-2">
+          <li>
+            <Link href={"/vendor/create"}>Add Vendor</Link>
+          </li>
+        </ul>
+      </div>
+      <DataTable columns={columns} data={vendorList} />
+    </div>
+  );
 }

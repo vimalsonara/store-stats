@@ -37,12 +37,13 @@ export default function ViewPurchase({ params }: { params: { id: string } }) {
       listPurchaseById();
     }
   }, [params.id, session]);
+
   return (
     <div>
       <div>
         <div>
           <span className="font-bold">Date: </span>
-          {format(new Date(purchase?.date), "dd/MM/yy")}
+          {purchase?.date}
         </div>
         <div>
           <span className="font-bold">Vendor: </span>
@@ -50,7 +51,7 @@ export default function ViewPurchase({ params }: { params: { id: string } }) {
         </div>
         <div>
           <span className="font-bold">Bill Amount: </span>
-          {purchase?.totalAmount}/-
+          {purchase?.totalAmount}
         </div>
       </div>
       <table>

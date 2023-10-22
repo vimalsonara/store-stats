@@ -12,13 +12,13 @@ function AuthButton() {
             <Link href={"/"}>Dashboard</Link>
           </li>
           <li>
-            <Link href={"/vendor/create"}>Add Vendor</Link>
+            <Link href={"/vendor/list"}>Vendor</Link>
           </li>
           <li>
-            <Link href={"/product/create"}>Add Product</Link>
+            <Link href={"/product/list"}>Product</Link>
           </li>
           <li>
-            <Link href={"/purchase/add"}>New Purchase</Link>
+            <Link href={"/purchase/list"}>Purchase</Link>
           </li>
           <li>
             <button onClick={() => signOut()}>Sign out</button>
