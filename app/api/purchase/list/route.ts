@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import connectDB from "@/lib/db";
-import Purchase from "@/models/purchase";
+import PurchaseEntry from "@/models/purchase";
 
 connectDB();
 
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { userId } = reqBody;
 
-      const purchaseList = await Purchase.find({ userId });
+      const purchaseList = await PurchaseEntry.find({ userId });
 
       if (purchaseList.length > 0) {
         return NextResponse.json(purchaseList, { status: 200 });
