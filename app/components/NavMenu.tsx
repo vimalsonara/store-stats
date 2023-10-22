@@ -18,7 +18,7 @@ function AuthButton() {
             <Link href={"/product/create"}>Add Product</Link>
           </li>
           <li>
-            <Link href={"/purchaseEntry/add"}>New Purchase</Link>
+            <Link href={"/purchase/add"}>New Purchase</Link>
           </li>
           <li>
             <button onClick={() => signOut()}>Sign out</button>
