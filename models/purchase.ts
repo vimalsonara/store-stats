@@ -27,10 +27,13 @@ const purchaseModel = new mongoose.Schema(
       type: String,
       required: true,
     },
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
     items: {
       type: [
         {
-          itemId: String,
           itemName: String,
           quantity: Number,
           price: Number,

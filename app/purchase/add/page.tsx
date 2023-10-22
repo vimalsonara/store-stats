@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Item {
-  itemId: string;
   itemName: string;
   quantity: number;
   price: number;
@@ -38,7 +37,7 @@ export default function PurchaseEntry() {
   const [vendorList, setVendorList] = useState<Vendor[]>([]);
   const [productList, setProductList] = useState<Product[]>([]);
   const [selectedVendorName, setSelectedVendorName] = useState("");
-  const [productCount, setProductCount] = useState([0]);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     if (session?.user.id) {
@@ -77,6 +76,30 @@ export default function PurchaseEntry() {
     name: "items",
   });
 
+  const handleQuantityChange = (index: number, value: number) => {
+    const updatedFields = [...fields];
+    updatedFields[index].quantity = value || 0;
+    fields[index] = updatedFields[index];
+
+    const newTotalAmount = updatedFields.reduce((total, item) => {
+      return total + item.quantity * item.price;
+    }, 0);
+
+    setTotalAmount(newTotalAmount);
+  };
+
+  const handlePriceChange = (index: number, value: number) => {
+    const updatedFields = [...fields];
+    updatedFields[index].price = value || 0;
+    fields[index] = updatedFields[index];
+
+    const newTotalAmount = updatedFields.reduce((total, item) => {
+      return total + item.quantity * item.price;
+    }, 0);
+
+    setTotalAmount(newTotalAmount);
+  };
+  console.log(totalAmount);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const response = await axios.post("/api/purchase", {
@@ -84,6 +107,7 @@ export default function PurchaseEntry() {
         userId: session?.user.id,
         vendorId: data.vendorId,
         vendorName: selectedVendorName,
+        totalAmount,
         items: data.items,
       });
       if (response.status === 201) {
@@ -143,7 +167,7 @@ export default function PurchaseEntry() {
         {fields.map((item, index) => (
           <div key={item.id} className="flex gap-2 flex-wrap">
             <select
-              {...register(`items.${index}.itemId`)}
+              {...register(`items.${index}.itemName`)}
               className={"rounded p-1 outline-none text-black"}
             >
               <option value="">Select</option>
@@ -160,6 +184,9 @@ export default function PurchaseEntry() {
               min="1"
               className={"rounded p-1 outline-none text-black"}
               {...register(`items.${index}.quantity`, { required: true })}
+              onChange={(e) =>
+                handleQuantityChange(index, parseInt(e.target.value))
+              }
             />
             <input
               type="number"
@@ -168,6 +195,9 @@ export default function PurchaseEntry() {
               placeholder="Price"
               className={"rounded p-1 outline-none text-black"}
               {...register(`items.${index}.price`, { required: true })}
+              onChange={(e) =>
+                handlePriceChange(index, parseInt(e.target.value))
+              }
             />
             {index > 0 && (
               <button
@@ -180,9 +210,10 @@ export default function PurchaseEntry() {
           </div>
         ))}
         <div className="flex justify-center items-center gap-2">
+          {totalAmount.toString()}
           <button
             className="bg-blue-500 p-1 rounded-md"
-            onClick={() => append({})}
+            onClick={() => append({ itemName: "", quantity: 0, price: 0 })}
           >
             Add Item
           </button>

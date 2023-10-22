@@ -12,9 +12,17 @@ export async function POST(req: NextRequest) {
     try {
       const reqBody = await req.json();
 
-      const { date, userId, vendorId, vendorName, items } = reqBody;
+      const { date, userId, vendorId, vendorName, totalAmount, items } =
+        reqBody;
 
-      if (!date || !userId || !vendorId || !vendorName || !items) {
+      if (
+        !date ||
+        !userId ||
+        !vendorId ||
+        !vendorName ||
+        !totalAmount ||
+        !items
+      ) {
         return NextResponse.json(
           { error: "Any details can't be empty." },
           { status: 400 }
@@ -26,6 +34,7 @@ export async function POST(req: NextRequest) {
         userId,
         vendorId,
         vendorName,
+        totalAmount,
         items,
       });
       return NextResponse.json({ newPurchaseEntry }, { status: 201 });
