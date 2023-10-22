@@ -3,11 +3,23 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { columns } from "./columns";
+import DataTable from "@/app/components/dataTable";
 
-export default function ViewPurchase({ params }: { params: { id: string } }) {
+export type Purchase = {
+  _id: string;
+  date: string;
+  totalAmount: number;
+};
+
+export default function VendorPurchaseList({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { data: session } = useSession();
+  const [purchaseList, setPurchaseList] = useState<Purchase[]>([]);
 
-  const [purchaseList, setPurchaseList] = useState();
   useEffect(() => {
     if (params.id && session?.user) {
       const listPurchaseById = async () => {
@@ -24,5 +36,9 @@ export default function ViewPurchase({ params }: { params: { id: string } }) {
     }
   }, [params.id, session]);
   console.log(purchaseList);
-  return <div>Purchase By Vendor</div>;
+  return (
+    <div>
+      <DataTable columns={columns} data={purchaseList} />
+    </div>
+  );
 }

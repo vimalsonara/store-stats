@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const purchaseId = searchParams.get("id");
 
-      const purchase = await PurchaseEntry.find({ _id: purchaseId });
+      const purchase = await PurchaseEntry.findOne({ _id: purchaseId });
 
       if (purchase) {
         return NextResponse.json(purchase, { status: 200 });
