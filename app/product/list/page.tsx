@@ -38,7 +38,7 @@ export default function ProductList() {
       <div>
         <ul className="flex gap-2 justify-around p-2">
           <li>
-            <Link href={"/product/create"}>Add Vendor</Link>
+            <Link href={"/product/create"}>Add Product</Link>
           </li>
         </ul>
       </div>

@@ -39,7 +39,7 @@ export default function PurchaseList() {
       <div>
         <ul className="flex gap-2 justify-around p-2">
           <li>
-            <Link href={"/vendor/create"}>New Purchase</Link>
+            <Link href={"/purchase/add"}>New Purchase</Link>
           </li>
         </ul>
       </div>

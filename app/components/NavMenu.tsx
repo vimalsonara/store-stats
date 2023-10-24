@@ -7,7 +7,7 @@ function AuthButton() {
   if (session) {
     return (
       <>
-        <ul className="flex gap-2 justify-around border-b-2 p-2">
+        <ul className="flex flex-col md:flex-row md:items-center gap-2 justify-around border-b-2 p-2">
           <li>
             <Link href={"/"}>Dashboard</Link>
           </li>
