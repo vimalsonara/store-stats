@@ -46,13 +46,27 @@ export default function Home() {
 
   return (
     <div className="flex gap-3 mt-2 flex-wrap">
-      <DashboardCard cardTitle={"Total Vendors"} total={vendorList.length} />
-      <DashboardCard cardTitle={"Total Products"} total={productList.length} />
-      <DashboardCard cardTitle={"Total Purchase"} total={purchaseList.length} />
-      <DashboardCard
-        cardTitle={"Total Purchase Amount"}
-        total={totalPurchase}
-      />
+      {vendorList && (
+        <DashboardCard cardTitle={"Total Vendors"} total={vendorList.length} />
+      )}
+      {productList && (
+        <DashboardCard
+          cardTitle={"Total Products"}
+          total={productList.length}
+        />
+      )}
+      {purchaseList && (
+        <>
+          <DashboardCard
+            cardTitle={"Total Purchase"}
+            total={purchaseList.length}
+          />
+          <DashboardCard
+            cardTitle={"Total Purchase Amount"}
+            total={totalPurchase}
+          />
+        </>
+      )}
     </div>
   );
 }
