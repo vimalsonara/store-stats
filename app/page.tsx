@@ -17,25 +17,55 @@ export default function Home() {
 
   useEffect(() => {
     if (session?.user.id) {
-      const getVendorProductPurchase = async () => {
+      const getVendors = async () => {
         try {
           const vendors = await axios.post("/api/vendor/list", {
             userId: session?.user.id,
           });
-          const products = await axios.post("/api/product/list", {
-            userId: session?.user.id,
-          });
-          const purchases = await axios.post("/api/purchase/list", {
-            userId: session?.user.id,
-          });
-          setVendorList(vendors.data);
-          setProductList(products.data);
-          setPurchaseList(purchases.data);
+          if (vendors.data) {
+            console.log(vendors);
+            setVendorList(vendors.data);
+          } else {
+            setVendorList([]);
+          }
         } catch (error: any) {
           console.log(error.message);
         }
       };
-      getVendorProductPurchase();
+      const getProducts = async () => {
+        try {
+          const products = await axios.post("/api/product/list", {
+            userId: session?.user.id,
+          });
+          if (products.data) {
+            console.log(products);
+            setProductList(products.data);
+          } else {
+            setProductList([]);
+          }
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
+      const getPurchases = async () => {
+        try {
+          const purchases = await axios.post("/api/purchase/list", {
+            userId: session?.user.id,
+          });
+
+          if (purchases.data) {
+            console.log(purchases);
+            setPurchaseList(purchases.data);
+          } else {
+            setPurchaseList([]);
+          }
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
+      getVendors();
+      getProducts();
+      getPurchases();
     }
   }, [session]);
 
@@ -46,16 +76,16 @@ export default function Home() {
 
   return (
     <div className="flex gap-3 mt-2 flex-wrap">
-      {vendorList && (
+      {vendorList.length > 0 && (
         <DashboardCard cardTitle={"Total Vendors"} total={vendorList.length} />
       )}
-      {productList && (
+      {productList.length > 0 && (
         <DashboardCard
           cardTitle={"Total Products"}
           total={productList.length}
         />
       )}
-      {purchaseList && (
+      {purchaseList.length > 0 && (
         <>
           <DashboardCard
             cardTitle={"Total Purchase"}
