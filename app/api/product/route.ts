@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { product, userId } = reqBody;
 
-      const productExist = await Product.findOne({ product });
+      const productExist = await Product.findOne({ product, userId });
 
       if (productExist) {
         return NextResponse.json(

@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { vendorName, mobile, userId } = reqBody;
 
-      const vendorExist = await Vendor.findOne({ mobile });
+      const vendorExist = await Vendor.findOne({ mobile, userId });
 
       if (vendorExist) {
         return NextResponse.json(
