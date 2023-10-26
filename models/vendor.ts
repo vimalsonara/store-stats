@@ -8,7 +8,6 @@ const vendorModel = new mongoose.Schema(
     },
     mobile: {
       type: String,
-      unique: [true, "Mobile already exists."],
       required: [true, "Mobile is required."],
     },
     userId: {

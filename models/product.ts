@@ -4,7 +4,6 @@ const productModel = new mongoose.Schema(
   {
     product: {
       type: String,
-      unique: [true, "Product already exists."],
       required: [true, "Product name required."],
     },
     userId: {
