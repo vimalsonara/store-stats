@@ -133,7 +133,7 @@ export default function PurchaseEntry() {
           className={
             errors.date
               ? "border-2 border-red-500 rounded p-1 outline-none"
-              : "rounded p-1 outline-none text-black"
+              : "rounded p-1 outline-none "
           }
           {...register("date", { required: true })}
         />
@@ -143,7 +143,7 @@ export default function PurchaseEntry() {
           className={
             errors.vendorId
               ? "border-2 border-red-500 rounded p-1 outline-none"
-              : "rounded p-1 outline-none text-black"
+              : "rounded p-1 outline-none "
           }
           onChange={(e) => {
             const selectedVendorId = e.target.value;
@@ -168,7 +168,7 @@ export default function PurchaseEntry() {
           <div key={item.id} className="flex gap-2 flex-wrap">
             <select
               {...register(`items.${index}.itemName`)}
-              className={"rounded p-1 outline-none text-black"}
+              className={"rounded p-1 outline-none "}
             >
               <option value="">Select</option>
               {productList.map((product) => (
@@ -182,7 +182,7 @@ export default function PurchaseEntry() {
               placeholder="Quantity"
               step="1"
               min="1"
-              className={"rounded p-1 outline-none text-black"}
+              className={"rounded p-1 outline-none "}
               {...register(`items.${index}.quantity`, { required: true })}
               onChange={(e) =>
                 handleQuantityChange(index, parseInt(e.target.value))
@@ -193,7 +193,7 @@ export default function PurchaseEntry() {
               step="1"
               min="1"
               placeholder="Price"
-              className={"rounded p-1 outline-none text-black"}
+              className={"rounded p-1 outline-none"}
               {...register(`items.${index}.price`, { required: true })}
               onChange={(e) =>
                 handlePriceChange(index, parseInt(e.target.value))

@@ -48,7 +48,7 @@ export default function CreateProduct() {
           className={
             errors.product
               ? "border-2 border-red-500 rounded p-1 outline-none"
-              : "rounded p-1 outline-none text-black"
+              : "rounded p-1 outline-none "
           }
           {...register("product", { required: true })}
         />

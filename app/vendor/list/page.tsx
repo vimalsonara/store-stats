@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import DataTable from "../../components/dataTable";
+import DataTable from "../../../components/dataTable";
 import { columns } from "./columns";
 import Link from "next/link";
 

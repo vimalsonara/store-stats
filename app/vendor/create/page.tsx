@@ -50,7 +50,7 @@ export default function CreateVendor() {
           className={
             errors.vendorName
               ? "border-2 border-red-500 rounded p-1 outline-none"
-              : "rounded p-1 outline-none text-black"
+              : "rounded p-1 outline-none "
           }
           {...register("vendorName", { required: true })}
         />
@@ -63,7 +63,7 @@ export default function CreateVendor() {
           className={
             errors.mobile
               ? "border-2 border-red-500 rounded p-1 outline-none"
-              : "rounded p-1 outline-none text-black"
+              : "rounded p-1 outline-none "
           }
           {...register("mobile", { required: true })}
         />

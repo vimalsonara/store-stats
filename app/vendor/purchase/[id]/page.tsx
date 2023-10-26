@@ -4,7 +4,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
-import DataTable from "@/app/components/dataTable";
+import DataTable from "@/components/dataTable";
 
 export type Purchase = {
   _id: string;
