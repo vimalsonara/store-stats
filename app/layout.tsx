@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { getServerSession } from "next-auth";
 
-import SessionProvider from "./components/SessionProviders";
-import Navmenu from "./components/NavMenu";
+import SessionProvider from "../components/SessionProviders";
+import Navmenu from "../components/NavMenu";
+import { ThemeProvider } from "../components/themeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -22,8 +23,15 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <Navmenu />
-          <main className="mx-auto max-w-5xl flex gap-2">{children}</main>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navmenu />
+            <main className="mx-auto max-w-5xl flex gap-2">{children}</main>
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>
