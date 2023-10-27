@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import SessionProvider from "../components/SessionProviders";
 import Navmenu from "../components/NavMenu";
 import { ThemeProvider } from "../components/themeProvider";
+import { SiteHeader } from "@/components/siteHeader";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -29,8 +30,10 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navmenu />
-            <main className="mx-auto max-w-5xl flex gap-2">{children}</main>
+            <div className="relative flex min-h-screen flex-col">
+              <SiteHeader />
+              <main className="p-2">{children}</main>
+            </div>
           </ThemeProvider>
         </SessionProvider>
       </body>
