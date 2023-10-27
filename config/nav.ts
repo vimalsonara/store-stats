@@ -8,20 +8,28 @@ interface NavConfig {
 export const navConfig: NavConfig = {
   mainNav: [
     {
-      title: "Dashboard",
-      href: "/",
-    },
-    {
-      title: "Vendor",
+      title: "Vendor List",
       href: "/vendor/list",
     },
     {
-      title: "Product",
+      title: "New Vendor",
+      href: "/vendor/create",
+    },
+    {
+      title: "Product List",
       href: "/product/list",
+    },
+    {
+      title: "New Product",
+      href: "/product/create",
     },
     {
       title: "Purchase",
       href: "/purchase/list",
+    },
+    {
+      title: "New Purchase",
+      href: "/purchase/add",
     },
   ],
   sidebarNav: [
@@ -65,7 +73,7 @@ export const navConfig: NavConfig = {
         },
         {
           title: "New Purchase",
-          href: "/purchase/create",
+          href: "/purchase/add",
           items: [],
         },
       ],
