@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import DataTable from "../../components/dataTable";
+import DataTable from "../../../components/dataTable";
 import { columns } from "./columns";
 import Link from "next/link";
 
@@ -36,13 +36,6 @@ export default function VendorList() {
   console.log(vendorList);
   return (
     <div>
-      <div>
-        <ul className="flex gap-2 justify-around p-2">
-          <li className="border p-2 rounded-lg">
-            <Link href={"/vendor/create"}>Add Vendor</Link>
-          </li>
-        </ul>
-      </div>
       <DataTable columns={columns} data={vendorList} />
     </div>
   );

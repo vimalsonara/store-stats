@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import Link from "next/link";
 
 export type Purchase = {
@@ -13,6 +14,11 @@ export const columns: ColumnDef<Purchase>[] = [
   {
     accessorKey: "date",
     header: "Purchase Date",
+    cell: ({ row }) => {
+      const purchaseDate = format(new Date(row.original.date), "dd/MM/yyyy");
+
+      return purchaseDate;
+    },
   },
   {
     accessorKey: "totalAmount",

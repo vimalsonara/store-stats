@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import DashboardCard from "@/app/components/dashboardCard";
+import DashboardCard from "@/components/dashboardCard";
 
 interface Purchase {
   totalAmount: number;

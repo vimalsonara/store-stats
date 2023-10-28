@@ -43,7 +43,7 @@ export default function ViewPurchase({ params }: { params: { id: string } }) {
       <div>
         <div>
           <span className="font-bold">Date: </span>
-          {purchase?.date}
+          {purchase?.date && format(new Date(purchase?.date), "dd/MM/yyyy")}
         </div>
         <div>
           <span className="font-bold">Vendor: </span>
