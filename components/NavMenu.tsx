@@ -13,7 +13,6 @@ import {
 function AuthButton() {
   const { data: session } = useSession();
   if (session) {
-    console.log("session", session);
     return (
       <>
         <DropdownMenu>
