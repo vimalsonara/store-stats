@@ -1,14 +1,10 @@
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import connectDB from "@/lib/db";
-import User from "@/models/user";
 import { db } from "@/lib/firebaseConfig";
 import {
   addDoc,
   collection,
-  doc,
-  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -31,30 +27,29 @@ export const authOptions: NextAuthOptions = {
     async session({ session }) {
       const userRef = collection(db, "users");
       let users: Users[] = [];
-      getDocs(userRef)
-        .then((snapshot) => {
-          snapshot.docs.forEach((doc) => {
-            const userData = doc.data();
-            const user: Users = {
-              id: doc.id,
-              email: userData.email,
-            };
-            users.push(user);
-          });
 
-          console.log(users, "users");
+      try {
+        const snapshot = await getDocs(userRef);
 
-          const sessionUser = users.find(
-            (user) => user.email === session.user.email
-          );
-
-          if (sessionUser) {
-            session.user.id = sessionUser.id.toString();
-          }
-        })
-        .catch((error: any) => {
-          console.log(error.message);
+        snapshot.docs.forEach((doc) => {
+          const userData = doc.data();
+          const user: Users = {
+            id: doc.id,
+            email: userData.email,
+          };
+          users.push(user);
         });
+
+        const sessionUser = users.find(
+          (user) => user.email === session.user.email
+        );
+
+        if (sessionUser) {
+          session.user.id = sessionUser.id.toString();
+        }
+      } catch (error: any) {
+        console.log(error.message);
+      }
 
       return session;
     },
