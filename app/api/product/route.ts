@@ -2,9 +2,21 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
 import connectDB from "@/lib/db";
-import Product from "@/models/product";
+import { db } from "@/lib/firebaseConfig";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
 
 connectDB();
+
+interface Product {
+  productName: string;
+  userId: string;
+}
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -12,23 +24,42 @@ export async function POST(req: NextRequest) {
     try {
       const reqBody = await req.json();
       const { product, userId } = reqBody;
+      console.log(product, userId);
+      const productsRef = collection(db, "products");
 
-      const productExist = await Product.findOne({ product, userId });
+      // Use async/await to wait for getDocs to complete and fetch data
+      const snapshot = await getDocs(productsRef);
+      const products: Product[] = [];
 
+      snapshot.docs.forEach((doc) => {
+        const productData = doc.data();
+        const currentProduct: Product = {
+          productName: productData.product,
+          userId: productData.userId,
+        };
+        products.push(currentProduct);
+      });
+
+      const productExist = products.find(
+        (p) => p.productName === product && p.userId === userId
+      );
       if (productExist) {
         return NextResponse.json(
           { error: "Product already exists." },
           { status: 400 }
         );
+      } else {
+        const createdAt = serverTimestamp();
+        const newProduct = await addDoc(productsRef, {
+          product: product,
+          userId: userId,
+          createdAt,
+        });
+        return NextResponse.json({ newProduct }, { status: 200 }); // 200 indicates success
       }
-
-      const newProduct = await Product.create({
-        product,
-        userId,
-      });
-
-      return NextResponse.json({ newProduct }, { status: 201 });
-    } catch (error) {}
+    } catch (error: any) {
+      return NextResponse.json({ error: error.message }, { status: 500 }); // 500 indicates a server error
+    }
   } else {
     return NextResponse.json(
       { error: "You are not authenticated." },
