@@ -24,10 +24,8 @@ export async function POST(req: NextRequest) {
     try {
       const reqBody = await req.json();
       const { product, userId } = reqBody;
-      console.log(product, userId);
       const productsRef = collection(db, "products");
 
-      // Use async/await to wait for getDocs to complete and fetch data
       const snapshot = await getDocs(productsRef);
       const products: Product[] = [];
 
@@ -55,10 +53,10 @@ export async function POST(req: NextRequest) {
           userId: userId,
           createdAt,
         });
-        return NextResponse.json({ newProduct }, { status: 200 }); // 200 indicates success
+        return NextResponse.json({ newProduct }, { status: 201 });
       }
     } catch (error: any) {
-      return NextResponse.json({ error: error.message }, { status: 500 }); // 500 indicates a server error
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
   } else {
     return NextResponse.json(
