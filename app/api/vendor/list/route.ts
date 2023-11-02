@@ -1,10 +1,15 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import connectDB from "@/lib/db";
-import Vendor from "@/models/vendor";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
-connectDB();
+interface Vendor {
+  id: string;
+  vendorName: string;
+  userId: string;
+  mobile: string;
+}
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -13,9 +18,22 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { userId } = reqBody;
 
-      const vendorList = await Vendor.find({ userId });
+      const vendorsRef = collection(db, "vendors");
+      const q = query(vendorsRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
 
-      if (vendorList.length > 0) {
+      if (!querySnapshot.empty) {
+        const vendorList: Vendor[] = [];
+        querySnapshot.forEach((doc) => {
+          const vendorData = doc.data();
+          const vendor: Vendor = {
+            id: doc.id,
+            vendorName: vendorData.vendorName,
+            userId: vendorData.userId,
+            mobile: vendorData.mobile,
+          };
+          vendorList.push(vendor);
+        });
         return NextResponse.json(vendorList, { status: 200 });
       } else {
         return NextResponse.json({ error: "No vendor found" }, { status: 404 });
