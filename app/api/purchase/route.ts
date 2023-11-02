@@ -1,10 +1,9 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import connectDB from "@/lib/db";
 import PurchaseEntry from "@/models/purchase";
-
-connectDB();
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
 // add new purchase
 export async function POST(req: NextRequest) {
@@ -30,7 +29,8 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const newPurchaseEntry = await PurchaseEntry.create({
+      const purchaseRef = collection(db, "purchaseEntries");
+      const newPurchase = await addDoc(purchaseRef, {
         date,
         userId,
         vendorId,
@@ -38,7 +38,11 @@ export async function POST(req: NextRequest) {
         totalAmount,
         items,
       });
-      return NextResponse.json({ newPurchaseEntry }, { status: 201 });
+
+      return NextResponse.json(
+        { message: "New Purchase Added." },
+        { status: 201 }
+      );
     } catch (error: any) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
