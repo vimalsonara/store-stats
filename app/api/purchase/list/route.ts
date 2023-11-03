@@ -75,10 +75,29 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const vendorId = searchParams.get("id");
 
-      const listPurchasebyVendorId = await PurchaseEntry.find({ vendorId });
+      const purchaseRef = collection(db, "purchaseEntries");
+      const snapshot = await getDocs(purchaseRef);
+      const purchaseList: Purchase[] = [];
 
-      if (listPurchasebyVendorId.length > 0) {
-        return NextResponse.json(listPurchasebyVendorId, { status: 200 });
+      snapshot.docs.forEach((doc) => {
+        const purchaseData = doc.data();
+        const currentPurchase: Purchase = {
+          date: purchaseData.date,
+          totalAmount: purchaseData.totalAmount,
+          userId: purchaseData.userId,
+          vendorId: purchaseData.vendorId,
+          vendorName: purchaseData.vendorName,
+          items: purchaseData.items,
+        };
+        purchaseList.push(currentPurchase);
+      });
+      console.log("total purchae", purchaseList);
+      const currentVendorPurchases = purchaseList.filter(
+        (purchase) => purchase.vendorId === vendorId
+      );
+
+      if (currentVendorPurchases.length > 0) {
+        return NextResponse.json(currentVendorPurchases, { status: 200 });
       } else {
         return NextResponse.json(
           { error: "No purchase found" },

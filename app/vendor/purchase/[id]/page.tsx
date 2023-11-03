@@ -7,7 +7,7 @@ import { columns } from "./columns";
 import DataTable from "@/components/dataTable";
 
 export type Purchase = {
-  _id: string;
+  id: string;
   date: string;
   totalAmount: number;
 };
