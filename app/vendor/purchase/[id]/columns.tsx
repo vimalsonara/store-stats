@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 
 export type Purchase = {
-  _id: string;
+  id: string;
   date: string;
   totalAmount: number;
 };
@@ -31,7 +31,7 @@ export const columns: ColumnDef<Purchase>[] = [
       const purchase = row.original;
 
       return (
-        <Link href={`/purchase/${purchase._id}`}>
+        <Link href={`/purchase/${purchase.id}`}>
           <button className="bg-blue-500 py-1 px-2 rounded-md hover:bg-blue-800">
             View
           </button>

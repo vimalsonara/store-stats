@@ -14,12 +14,12 @@ interface Item {
 }
 
 interface Vendor {
-  _id: string;
+  id: string;
   vendorName: string;
 }
 
 interface Product {
-  _id: string;
+  id: string;
   product: string;
 }
 
@@ -148,14 +148,14 @@ export default function PurchaseEntry() {
           onChange={(e) => {
             const selectedVendorId = e.target.value;
             const selectedVendor = vendorList.find(
-              (vendor) => vendor._id === selectedVendorId
+              (vendor) => vendor.id === selectedVendorId
             );
             setSelectedVendorName(selectedVendor?.vendorName || "");
           }}
         >
           <option value="">Select</option>
           {vendorList.map((vendor) => (
-            <option key={vendor._id} value={vendor._id}>
+            <option key={vendor.id} value={vendor.id}>
               {vendor.vendorName}
             </option>
           ))}
@@ -172,7 +172,7 @@ export default function PurchaseEntry() {
             >
               <option value="">Select</option>
               {productList.map((product) => (
-                <option key={product._id} value={product.product}>
+                <option key={product.id} value={product.product}>
                   {product.product}
                 </option>
               ))}

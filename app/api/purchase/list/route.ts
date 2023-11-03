@@ -1,10 +1,25 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import connectDB from "@/lib/db";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 import PurchaseEntry from "@/models/purchase";
 
-connectDB();
+interface Items {
+  itemName: string;
+  price: string;
+  quantity: string;
+}
+
+export interface Purchase {
+  id: string;
+  date: string;
+  totalAmount: number;
+  userId: string;
+  vendorId: string;
+  vendorName: string;
+  items: Items[];
+}
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -13,10 +28,30 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { userId } = reqBody;
 
-      const purchaseList = await PurchaseEntry.find({ userId });
+      const purchaseRef = collection(db, "purchaseEntries");
+      const snapshot = await getDocs(purchaseRef);
+      const purchaseList: Purchase[] = [];
 
-      if (purchaseList.length > 0) {
-        return NextResponse.json(purchaseList, { status: 200 });
+      snapshot.docs.forEach((doc) => {
+        const purchaseData = doc.data();
+        const currentPurchase: Purchase = {
+          id: doc.id,
+          date: purchaseData.date,
+          totalAmount: purchaseData.totalAmount,
+          userId: purchaseData.userId,
+          vendorId: purchaseData.vendorId,
+          vendorName: purchaseData.vendorName,
+          items: purchaseData.items,
+        };
+        purchaseList.push(currentPurchase);
+      });
+
+      const currentUsersPurchase = purchaseList.filter(
+        (purchase) => purchase.userId === userId
+      );
+
+      if (currentUsersPurchase.length > 0) {
+        return NextResponse.json(currentUsersPurchase, { status: 200 });
       } else {
         return NextResponse.json(
           { error: "No purchase found" },
@@ -42,10 +77,30 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const vendorId = searchParams.get("id");
 
-      const listPurchasebyVendorId = await PurchaseEntry.find({ vendorId });
+      const purchaseRef = collection(db, "purchaseEntries");
+      const snapshot = await getDocs(purchaseRef);
+      const purchaseList: Purchase[] = [];
 
-      if (listPurchasebyVendorId.length > 0) {
-        return NextResponse.json(listPurchasebyVendorId, { status: 200 });
+      snapshot.docs.forEach((doc) => {
+        const purchaseData = doc.data();
+        const currentPurchase: Purchase = {
+          id: doc.id,
+          date: purchaseData.date,
+          totalAmount: purchaseData.totalAmount,
+          userId: purchaseData.userId,
+          vendorId: purchaseData.vendorId,
+          vendorName: purchaseData.vendorName,
+          items: purchaseData.items,
+        };
+        purchaseList.push(currentPurchase);
+      });
+
+      const currentVendorPurchases = purchaseList.filter(
+        (purchase) => purchase.vendorId === vendorId
+      );
+
+      if (currentVendorPurchases.length > 0) {
+        return NextResponse.json(currentVendorPurchases, { status: 200 });
       } else {
         return NextResponse.json(
           { error: "No purchase found" },

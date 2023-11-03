@@ -1,10 +1,14 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import connectDB from "@/lib/db";
-import Product from "@/models/product";
+import { db } from "@/lib/firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
-connectDB();
+interface Product {
+  product: string;
+  userId: string;
+  id: string;
+}
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -13,9 +17,21 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { userId } = reqBody;
 
-      const productList = await Product.find({ userId });
+      const productsRef = collection(db, "products");
+      const q = query(productsRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
 
-      if (productList.length > 0) {
+      if (!querySnapshot.empty) {
+        const productList: Product[] = [];
+        querySnapshot.forEach((doc) => {
+          const productData = doc.data();
+          const product: Product = {
+            id: doc.id,
+            product: productData.product,
+            userId: productData.userId,
+          };
+          productList.push(product);
+        });
         return NextResponse.json(productList, { status: 200 });
       } else {
         return NextResponse.json(

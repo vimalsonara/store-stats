@@ -8,7 +8,7 @@ import { columns } from "./columns";
 import Link from "next/link";
 
 interface Vendor {
-  _id: string;
+  id: string;
   vendorName: string;
   mobile: string;
 }
