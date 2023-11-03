@@ -11,7 +11,8 @@ interface Items {
   quantity: string;
 }
 
-interface Purchase {
+export interface Purchase {
+  id: string;
   date: string;
   totalAmount: number;
   userId: string;
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
       snapshot.docs.forEach((doc) => {
         const purchaseData = doc.data();
         const currentPurchase: Purchase = {
+          id: doc.id,
           date: purchaseData.date,
           totalAmount: purchaseData.totalAmount,
           userId: purchaseData.userId,
@@ -82,6 +84,7 @@ export async function GET(req: NextRequest) {
       snapshot.docs.forEach((doc) => {
         const purchaseData = doc.data();
         const currentPurchase: Purchase = {
+          id: doc.id,
           date: purchaseData.date,
           totalAmount: purchaseData.totalAmount,
           userId: purchaseData.userId,
@@ -91,7 +94,7 @@ export async function GET(req: NextRequest) {
         };
         purchaseList.push(currentPurchase);
       });
-      console.log("total purchae", purchaseList);
+
       const currentVendorPurchases = purchaseList.filter(
         (purchase) => purchase.vendorId === vendorId
       );

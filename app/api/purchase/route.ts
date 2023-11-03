@@ -2,8 +2,9 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
 import PurchaseEntry from "@/models/purchase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { Purchase } from "@/app/api/purchase/list/route";
 
 // add new purchase
 export async function POST(req: NextRequest) {
@@ -62,7 +63,27 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const purchaseId = searchParams.get("id");
 
-      const purchase = await PurchaseEntry.findOne({ _id: purchaseId });
+      const purchaseRef = collection(db, "purchaseEntries");
+      const snapshot = await getDocs(purchaseRef);
+      const purchaseList: Purchase[] = [];
+
+      snapshot.docs.forEach((doc) => {
+        const purchaseData = doc.data();
+        const currentPurchase: Purchase = {
+          id: doc.id,
+          date: purchaseData.date,
+          totalAmount: purchaseData.totalAmount,
+          userId: purchaseData.userId,
+          vendorId: purchaseData.vendorId,
+          vendorName: purchaseData.vendorName,
+          items: purchaseData.items,
+        };
+        purchaseList.push(currentPurchase);
+      });
+
+      const purchase = purchaseList.find(
+        (purchaseItem) => purchaseItem.id === purchaseId
+      );
 
       if (purchase) {
         return NextResponse.json(purchase, { status: 200 });

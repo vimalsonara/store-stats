@@ -8,7 +8,7 @@ import { columns } from "./columns";
 import Link from "next/link";
 
 export type Purchase = {
-  _id: string;
+  id: string;
   date: string;
   totalAmount: number;
 };

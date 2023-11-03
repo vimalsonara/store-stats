@@ -6,14 +6,14 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 interface Item {
-  _id: string;
+  id: string;
   itemName: string;
   quantity: number;
   price: number;
 }
 
 export type Purchase = {
-  _id: string;
+  id: string;
   date: string;
   vendorName: string;
   totalAmount: number;
@@ -65,7 +65,7 @@ export default function ViewPurchase({ params }: { params: { id: string } }) {
         </thead>
         <tbody>
           {purchase?.items.map((item) => (
-            <tr key={item._id} className="border">
+            <tr key={item.id} className="border">
               <td className="border p-2">{item.itemName}</td>
               <td className="border p-2 text-center">{item.quantity}</td>
               <td className="border p-2 text-center">{item.price}/-</td>
