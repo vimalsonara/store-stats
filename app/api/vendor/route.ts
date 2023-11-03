@@ -53,7 +53,10 @@ export async function POST(req: NextRequest) {
           userId,
           createdAt,
         });
-        return NextResponse.json({ newVendor }, { status: 201 });
+        return NextResponse.json(
+          { messagge: "New Vendor Created." },
+          { status: 201 }
+        );
       }
     } catch (error: any) {
       return NextResponse.json({ error: error.message }, { status: 500 });

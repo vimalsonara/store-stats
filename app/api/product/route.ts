@@ -53,7 +53,10 @@ export async function POST(req: NextRequest) {
           userId: userId,
           createdAt,
         });
-        return NextResponse.json({ newProduct }, { status: 201 });
+        return NextResponse.json(
+          { message: "New Product Created." },
+          { status: 201 }
+        );
       }
     } catch (error: any) {
       return NextResponse.json({ error: error.message }, { status: 500 });
