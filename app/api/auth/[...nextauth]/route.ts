@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/firebaseConfig";
 import {
   addDoc,
@@ -18,9 +19,31 @@ interface Users {
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID ?? "",
-      clientSecret: process.env.GOOGLE_SECRET ?? "",
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_ID ?? "",
+    //   clientSecret: process.env.GOOGLE_SECRET ?? "",
+    // }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: {},
+        password: {},
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+        const res = await fetch("/api/user/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: credentials.email,
+            password: credentials.password,
+          }),
+        });
+        const data = await res.json();
+        console.log(data);
+        return data;
+      },
     }),
   ],
   callbacks: {
