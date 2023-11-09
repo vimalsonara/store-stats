@@ -19,7 +19,11 @@ interface Users {
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
-    const { name, email, password } = reqBody;
+    const { name, email, password } = reqBody.data;
+
+    if (!email || !password || !name) {
+      return NextResponse.json("Any details can't be empty", { status: 400 });
+    }
 
     const userRef = collection(db, "users");
     const emailCondition = where("email", "==", email);
@@ -39,8 +43,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         createdAt,
       });
-      console.log(hashedPassword);
-      return NextResponse.json(newUser);
+      return NextResponse.json("User created successfully", { status: 201 });
     } else {
       return NextResponse.json(
         { error: "User already exist" },

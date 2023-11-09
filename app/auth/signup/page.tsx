@@ -1,8 +1,10 @@
 "use client";
 
+import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type Inputs = {
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -20,6 +22,13 @@ export default function Signup() {
     if (data.password !== data.confirmPassword) {
       console.log("password not matched");
     }
+
+    try {
+      const response = await axios.post("/api/user/signup", {
+        data,
+      });
+      console.log(response);
+    } catch (error) {}
   };
 
   return (
@@ -27,6 +36,17 @@ export default function Signup() {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-2 border p-5 rounded-lg"
     >
+      <input
+        type="text"
+        placeholder="name"
+        {...register("name", { required: true })}
+        className={
+          errors.name
+            ? "border-2 border-red-500 rounded p-1 outline-none"
+            : "rounded p-1 outline-none "
+        }
+      />
+      {errors.name && <span className="text-red-500">Name required</span>}
       <input
         type="email"
         placeholder="email"
