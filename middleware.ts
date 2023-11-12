@@ -6,7 +6,7 @@ export default withAuth(
     const pathname = req.nextUrl.pathname;
     const protectedRoutes = config.matcher;
     if (protectedRoutes.includes(pathname) && !req.nextauth.token) {
-      return NextResponse.rewrite(new URL("/api/auth/signin"));
+      return NextResponse.rewrite(new URL("/auth/login"));
     }
   },
   {

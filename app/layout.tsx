@@ -2,9 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { getServerSession } from "next-auth";
-
 import SessionProvider from "../components/SessionProviders";
-import Navmenu from "../components/NavMenu";
 import { ThemeProvider } from "../components/themeProvider";
 import { SiteHeader } from "@/components/siteHeader";
 const inter = Inter({ subsets: ["latin"] });
@@ -20,6 +18,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession();
+  console.log(session);
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -31,7 +30,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
+              {session && <SiteHeader />}
               <main className="container flex p-2">{children}</main>
             </div>
           </ThemeProvider>
