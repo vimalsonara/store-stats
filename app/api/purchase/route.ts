@@ -1,7 +1,6 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import PurchaseEntry from "@/models/purchase";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import { Purchase } from "@/types/types";
