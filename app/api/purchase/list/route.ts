@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-import PurchaseEntry from "@/models/purchase";
 import { Purchase } from "@/types/types";
 
 export async function POST(req: NextRequest) {
