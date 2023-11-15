@@ -10,13 +10,9 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
+import { Product } from "@/types/types";
 
 connectDB();
-
-interface Product {
-  productName: string;
-  userId: string;
-}
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -32,14 +28,15 @@ export async function POST(req: NextRequest) {
       snapshot.docs.forEach((doc) => {
         const productData = doc.data();
         const currentProduct: Product = {
-          productName: productData.product,
+          product: productData.product,
           userId: productData.userId,
+          id: productData.id,
         };
         products.push(currentProduct);
       });
 
       const productExist = products.find(
-        (p) => p.productName === product && p.userId === userId
+        (p) => p.product === product && p.userId === userId
       );
       if (productExist) {
         return NextResponse.json(

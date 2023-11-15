@@ -3,13 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-
-interface Vendor {
-  id: string;
-  vendorName: string;
-  userId: string;
-  mobile: string;
-}
+import { Vendor } from "@/types/types";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);

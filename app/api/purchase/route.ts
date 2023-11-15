@@ -4,7 +4,7 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import PurchaseEntry from "@/models/purchase";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-import { Purchase } from "@/app/api/purchase/list/route";
+import { Purchase } from "@/types/types";
 
 // add new purchase
 export async function POST(req: NextRequest) {
