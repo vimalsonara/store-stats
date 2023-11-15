@@ -8,12 +8,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-
-interface Vendor {
-  mobile: string;
-  userId: string;
-  vendorName: string;
-}
+import { Vendor } from "@/types/types";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -33,6 +28,7 @@ export async function POST(req: NextRequest) {
           vendorName: vendorData.vendorName,
           mobile: vendorData.mobile,
           userId: vendorData.userId,
+          id: vendorData.id,
         };
         vendors.push(currentVendor);
       });

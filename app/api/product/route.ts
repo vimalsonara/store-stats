@@ -1,7 +1,6 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import connectDB from "@/lib/db";
 import { db } from "@/lib/firebaseConfig";
 import {
   addDoc,
@@ -10,13 +9,7 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
-
-connectDB();
-
-interface Product {
-  productName: string;
-  userId: string;
-}
+import { Product } from "@/types/types";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -32,14 +25,15 @@ export async function POST(req: NextRequest) {
       snapshot.docs.forEach((doc) => {
         const productData = doc.data();
         const currentProduct: Product = {
-          productName: productData.product,
+          product: productData.product,
           userId: productData.userId,
+          id: productData.id,
         };
         products.push(currentProduct);
       });
 
       const productExist = products.find(
-        (p) => p.productName === product && p.userId === userId
+        (p) => p.product === product && p.userId === userId
       );
       if (productExist) {
         return NextResponse.json(
