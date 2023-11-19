@@ -26,3 +26,8 @@ export interface Purchase {
   vendorName: string;
   items: Items[];
 }
+
+export interface LastSevenDaysPurchase {
+  date: string;
+  amount: number;
+}

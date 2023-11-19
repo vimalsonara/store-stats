@@ -4,6 +4,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import DashboardCard from "@/components/dashboardCard";
+import BarChart from "@/components/charts/barChart";
 
 interface Purchase {
   totalAmount: number;
@@ -14,6 +15,7 @@ export default function Home() {
   const [vendorList, setVendorList] = useState([]);
   const [productList, setProductList] = useState([]);
   const [purchaseList, setPurchaseList] = useState<Purchase[]>([]);
+  const [lastSevenDaysPurchase, setLastSevenDaysPurchase] = useState([]);
 
   useEffect(() => {
     if (session?.user.id) {
@@ -23,7 +25,6 @@ export default function Home() {
             userId: session?.user.id,
           });
           if (vendors.data) {
-            console.log(vendors);
             setVendorList(vendors.data);
           } else {
             setVendorList([]);
@@ -38,7 +39,6 @@ export default function Home() {
             userId: session?.user.id,
           });
           if (products.data) {
-            console.log(products);
             setProductList(products.data);
           } else {
             setProductList([]);
@@ -54,7 +54,6 @@ export default function Home() {
           });
 
           if (purchases.data) {
-            console.log(purchases);
             setPurchaseList(purchases.data);
           } else {
             setPurchaseList([]);
@@ -63,9 +62,23 @@ export default function Home() {
           console.log(error.message);
         }
       };
+
+      const getLastSevenDaysPurchase = async () => {
+        try {
+          const today = new Date();
+          const todayFormatted = today.toISOString().split("T")[0];
+          const lastSevenDaysData = await axios.get(
+            "/api/purchase/week-summary?today=" + todayFormatted
+          );
+          if (lastSevenDaysData) {
+            setLastSevenDaysPurchase(lastSevenDaysData.data);
+          }
+        } catch (error) {}
+      };
       getVendors();
       getProducts();
       getPurchases();
+      getLastSevenDaysPurchase();
     }
   }, [session]);
 
@@ -75,28 +88,40 @@ export default function Home() {
   );
 
   return (
-    <div className="flex gap-3 mt-2 flex-wrap">
-      {vendorList.length > 0 && (
-        <DashboardCard cardTitle={"Total Vendors"} total={vendorList.length} />
-      )}
-      {productList.length > 0 && (
-        <DashboardCard
-          cardTitle={"Total Products"}
-          total={productList.length}
-        />
-      )}
-      {purchaseList.length > 0 && (
-        <>
+    <>
+      <div className="flex gap-3 mt-2 flex-wrap">
+        {vendorList.length > 0 && (
           <DashboardCard
-            cardTitle={"Total Purchase"}
-            total={purchaseList.length}
+            cardTitle={"Total Vendors"}
+            total={vendorList.length}
           />
+        )}
+        {productList.length > 0 && (
           <DashboardCard
-            cardTitle={"Total Purchase Amount"}
-            total={totalPurchase}
+            cardTitle={"Total Products"}
+            total={productList.length}
           />
-        </>
-      )}
-    </div>
+        )}
+        {purchaseList.length > 0 && (
+          <>
+            <DashboardCard
+              cardTitle={"Total Purchase"}
+              total={purchaseList.length}
+            />
+            <DashboardCard
+              cardTitle={"Total Purchase Amount"}
+              total={totalPurchase}
+            />
+          </>
+        )}
+      </div>
+      <div className="grid md:grid-cols-2 mt-2">
+        {lastSevenDaysPurchase && (
+          <div>
+            <BarChart purchaseData={lastSevenDaysPurchase} />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
