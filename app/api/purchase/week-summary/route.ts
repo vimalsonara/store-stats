@@ -18,14 +18,14 @@ export async function GET(req: NextRequest) {
     if (date !== null) {
       const today = new Date(date);
       const sevenDaysAgo = new Date(today);
-      sevenDaysAgo.setDate(today.getDate() - 5);
+      sevenDaysAgo.setDate(today.getDate() - 6);
 
       for (let i = 0; i < 7; i++) {
         const currentDate = new Date(sevenDaysAgo);
         currentDate.setDate(sevenDaysAgo.getDate() + i);
 
         const formattedDate = currentDate.toISOString().split("T")[0];
-
+        console.log(formattedDate);
         dateArray.push(formattedDate);
       }
 
