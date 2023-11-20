@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import DashboardCard from "@/components/dashboardCard";
 import BarChart from "@/components/charts/barChart";
+import PieChart from "@/components/charts/pieChart";
 
 interface Purchase {
   totalAmount: number;
@@ -16,6 +17,7 @@ export default function Home() {
   const [productList, setProductList] = useState([]);
   const [purchaseList, setPurchaseList] = useState<Purchase[]>([]);
   const [lastSevenDaysPurchase, setLastSevenDaysPurchase] = useState([]);
+  const [vendorSummary, setVendorSummary] = useState([]);
 
   useEffect(() => {
     if (session?.user.id) {
@@ -73,12 +75,28 @@ export default function Home() {
           if (lastSevenDaysData) {
             setLastSevenDaysPurchase(lastSevenDaysData.data);
           }
-        } catch (error) {}
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
+
+      const getVendorSummary = async () => {
+        try {
+          const vendorSummaryData = await axios.get(
+            "/api/purchase/vendors-summary?userId=" + session?.user.id
+          );
+          if (vendorSummaryData) {
+            setVendorSummary(vendorSummaryData.data);
+          }
+        } catch (error: any) {
+          console.log(error.message);
+        }
       };
       getVendors();
       getProducts();
       getPurchases();
       getLastSevenDaysPurchase();
+      getVendorSummary();
     }
   }, [session]);
 
@@ -115,10 +133,15 @@ export default function Home() {
           </>
         )}
       </div>
-      <div className="grid md:grid-cols-2 mt-2">
+      <div className="grid md:grid-cols-12 mt-5">
         {lastSevenDaysPurchase && (
-          <div>
+          <div className="md:col-span-8">
             <BarChart purchaseData={lastSevenDaysPurchase} />
+          </div>
+        )}
+        {vendorSummary && (
+          <div className="md:col-span-4">
+            <PieChart vendorSummaryData={vendorSummary} />
           </div>
         )}
       </div>

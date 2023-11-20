@@ -31,3 +31,8 @@ export interface LastSevenDaysPurchase {
   date: string;
   amount: number;
 }
+
+export interface VendorSummary {
+  vendorName: string;
+  amount: number;
+}
