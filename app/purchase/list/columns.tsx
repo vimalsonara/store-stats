@@ -3,12 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import Link from "next/link";
-
-export type Purchase = {
-  id: string;
-  date: string;
-  totalAmount: number;
-};
+import { Purchase } from "@/types/types";
 
 export const columns: ColumnDef<Purchase>[] = [
   {
@@ -20,6 +15,7 @@ export const columns: ColumnDef<Purchase>[] = [
       return purchaseDate;
     },
   },
+  { accessorKey: "vendorName", header: "Vendor Name" },
   {
     accessorKey: "totalAmount",
     header: "Total Amount",

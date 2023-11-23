@@ -7,9 +7,9 @@ import DashboardCard from "@/components/dashboardCard";
 import BarChart from "@/components/charts/barChart";
 import PieChart from "@/components/charts/pieChart";
 
-interface Purchase {
-  totalAmount: number;
-}
+import { Purchase } from "@/types/types";
+import DataTable from "@/components/dataTable";
+import { columns } from "./purchase/list/columns";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -145,6 +145,9 @@ export default function Home() {
           </div>
         )}
       </div>
+      {purchaseList.length > 0 && (
+        <DataTable columns={columns} data={purchaseList.slice(0, 10)} />
+      )}
     </>
   );
 }
