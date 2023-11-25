@@ -1,14 +1,15 @@
 "use client";
 
+import BarChart from "@/components/charts/barChart";
+import PieChart from "@/components/charts/pieChart";
+import DashboardCard from "@/components/dashboardCard";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import DashboardCard from "@/components/dashboardCard";
-import BarChart from "@/components/charts/barChart";
 
-interface Purchase {
-  totalAmount: number;
-}
+import ChartCard from "@/components/chartCard";
+import LatestPurchase from "@/components/latestPurchase";
+import { Purchase } from "@/types/types";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -16,6 +17,7 @@ export default function Home() {
   const [productList, setProductList] = useState([]);
   const [purchaseList, setPurchaseList] = useState<Purchase[]>([]);
   const [lastSevenDaysPurchase, setLastSevenDaysPurchase] = useState([]);
+  const [vendorSummary, setVendorSummary] = useState([]);
 
   useEffect(() => {
     if (session?.user.id) {
@@ -73,12 +75,28 @@ export default function Home() {
           if (lastSevenDaysData) {
             setLastSevenDaysPurchase(lastSevenDaysData.data);
           }
-        } catch (error) {}
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
+
+      const getVendorSummary = async () => {
+        try {
+          const vendorSummaryData = await axios.get(
+            "/api/purchase/vendors-summary?userId=" + session?.user.id
+          );
+          if (vendorSummaryData) {
+            setVendorSummary(vendorSummaryData.data);
+          }
+        } catch (error: any) {
+          console.log(error.message);
+        }
       };
       getVendors();
       getProducts();
       getPurchases();
       getLastSevenDaysPurchase();
+      getVendorSummary();
     }
   }, [session]);
 
@@ -88,8 +106,8 @@ export default function Home() {
   );
 
   return (
-    <>
-      <div className="flex gap-3 mt-2 flex-wrap">
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:mt-3">
         {vendorList.length > 0 && (
           <DashboardCard
             cardTitle={"Total Vendors"}
@@ -115,13 +133,21 @@ export default function Home() {
           </>
         )}
       </div>
-      <div className="grid md:grid-cols-2 mt-2">
+      <div className="grid gap-3 lg:grid-cols-3">
         {lastSevenDaysPurchase && (
-          <div>
+          <ChartCard heading="Last 7 days" className="lg:col-span-2">
             <BarChart purchaseData={lastSevenDaysPurchase} />
-          </div>
+          </ChartCard>
+        )}
+        {vendorSummary && (
+          <ChartCard heading="Vendor Summary" className="lg:col-span-1">
+            <PieChart vendorSummaryData={vendorSummary} />
+          </ChartCard>
         )}
       </div>
-    </>
+      {purchaseList.length > 0 && (
+        <LatestPurchase data={purchaseList.slice(0, 10)} />
+      )}
+    </div>
   );
 }
