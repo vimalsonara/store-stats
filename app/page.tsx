@@ -1,15 +1,15 @@
 "use client";
 
+import BarChart from "@/components/charts/barChart";
+import PieChart from "@/components/charts/pieChart";
+import DashboardCard from "@/components/dashboardCard";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import DashboardCard from "@/components/dashboardCard";
-import BarChart from "@/components/charts/barChart";
-import PieChart from "@/components/charts/pieChart";
 
+import ChartCard from "@/components/chartCard";
+import LatestPurchase from "@/components/latestPurchase";
 import { Purchase } from "@/types/types";
-import DataTable from "@/components/dataTable";
-import { columns } from "./purchase/list/columns";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -106,8 +106,8 @@ export default function Home() {
   );
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-2">
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:mt-3">
         {vendorList.length > 0 && (
           <DashboardCard
             cardTitle={"Total Vendors"}
@@ -133,21 +133,21 @@ export default function Home() {
           </>
         )}
       </div>
-      <div className="grid md:grid-cols-12 mt-5">
+      <div className="grid gap-3 lg:grid-cols-3">
         {lastSevenDaysPurchase && (
-          <div className="md:col-span-8">
+          <ChartCard heading="Last 7 days" className="lg:col-span-2">
             <BarChart purchaseData={lastSevenDaysPurchase} />
-          </div>
+          </ChartCard>
         )}
         {vendorSummary && (
-          <div className="md:col-span-4">
+          <ChartCard heading="Vendor Summary" className="lg:col-span-1">
             <PieChart vendorSummaryData={vendorSummary} />
-          </div>
+          </ChartCard>
         )}
       </div>
       {purchaseList.length > 0 && (
-        <DataTable columns={columns} data={purchaseList.slice(0, 10)} />
+        <LatestPurchase data={purchaseList.slice(0, 10)} />
       )}
-    </>
+    </div>
   );
 }
