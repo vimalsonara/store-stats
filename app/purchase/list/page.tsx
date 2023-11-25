@@ -5,13 +5,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import DataTable from "../../../components/dataTable";
 import { columns } from "./columns";
-import Link from "next/link";
-
-export type Purchase = {
-  id: string;
-  date: string;
-  totalAmount: number;
-};
+import { Purchase } from "@/types/types";
 
 export default function PurchaseList() {
   const [purchaseList, setPurchaseList] = useState<Purchase[]>([]);
