@@ -1,15 +1,15 @@
 "use client";
 
+import ChartCard from "@/components/chartCard";
 import BarChart from "@/components/charts/barChart";
 import PieChart from "@/components/charts/pieChart";
 import DashboardCard from "@/components/dashboardCard";
+import LatestPurchase from "@/components/latestPurchase";
+import { Purchase } from "@/types/types";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
-import ChartCard from "@/components/chartCard";
-import LatestPurchase from "@/components/latestPurchase";
-import { Purchase } from "@/types/types";
+import { Users, Layers, ShoppingCart, IndianRupee } from "lucide-react";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -107,17 +107,19 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:mt-3">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 mt-3">
         {vendorList.length > 0 && (
           <DashboardCard
             cardTitle={"Total Vendors"}
             total={vendorList.length}
+            icon={<Users />}
           />
         )}
         {productList.length > 0 && (
           <DashboardCard
             cardTitle={"Total Products"}
             total={productList.length}
+            icon={<Layers />}
           />
         )}
         {purchaseList.length > 0 && (
@@ -125,10 +127,12 @@ export default function Home() {
             <DashboardCard
               cardTitle={"Total Purchase"}
               total={purchaseList.length}
+              icon={<ShoppingCart />}
             />
             <DashboardCard
               cardTitle={"Total Purchase Amount"}
               total={totalPurchase}
+              icon={<IndianRupee />}
             />
           </>
         )}

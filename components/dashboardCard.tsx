@@ -1,16 +1,26 @@
+import { ReactNode } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
 interface DashboardCardProps {
   cardTitle: string;
   total: number;
+  icon: ReactNode;
 }
 
 export default function DashboardCard({
   cardTitle,
   total,
+  icon,
 }: DashboardCardProps) {
   return (
-    <div className="border p-2 text-center rounded-lg">
-      <div className="border-b p-2">{cardTitle}</div>
-      <div className="p-2">{total}</div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{cardTitle}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex items-center justify-between">
+        <div className="text-3xl font-bold">{total}</div>
+        {icon}
+      </CardContent>
+    </Card>
   );
 }
