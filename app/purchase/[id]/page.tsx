@@ -1,10 +1,17 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import axios from "axios";
-import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
 interface Item {
   id: string;
   itemName: string;
@@ -39,43 +46,55 @@ export default function ViewPurchase({ params }: { params: { id: string } }) {
   }, [params.id, session]);
 
   return (
-    <div>
-      <div>
-        <div>
-          <span className="font-bold">Date: </span>
-          {purchase?.date && format(new Date(purchase?.date), "dd/MM/yyyy")}
-        </div>
-        <div>
-          <span className="font-bold">Vendor: </span>
-          {purchase?.vendorName}
-        </div>
-        <div>
-          <span className="font-bold">Bill Amount: </span>
-          {purchase?.totalAmount}
-        </div>
-      </div>
-      <table>
-        <thead>
-          <tr className="border">
-            <th className="border p-2">Item Name</th>
-            <th className="border p-2 text-center">Quantity</th>
-            <th className="border p-2 text-center">Price</th>
-            <th className="border p-2 text-center">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {purchase?.items.map((item) => (
-            <tr key={item.id} className="border">
-              <td className="border p-2">{item.itemName}</td>
-              <td className="border p-2 text-center">{item.quantity}</td>
-              <td className="border p-2 text-center">{item.price}/-</td>
-              <td className="border p-2 text-center">
-                {item.quantity * item.price}/-
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="mt-3">
+      {purchase && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Purchase Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="flex items-center">
+              <div>Date</div>
+              <div className="ml-auto">{purchase.date}</div>
+            </div>
+            <div className="flex items-center">
+              <div>Vendor</div>
+              <div className="ml-auto">{purchase.vendorName}</div>
+            </div>
+            <div className="flex items-center font-medium">
+              <div>Bill Amount</div>
+              <div className="ml-auto">{purchase.totalAmount}/-</div>
+            </div>
+          </CardContent>
+          <Card>
+            <CardHeader>
+              <CardTitle>Purchased Items</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Item Name</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {purchase.items.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.itemName}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>{item.price}</TableCell>
+                      <TableCell>{item.quantity * item.price}/-</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </Card>
+      )}
     </div>
   );
 }
