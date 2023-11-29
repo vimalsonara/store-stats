@@ -22,7 +22,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>
+        <SessionProvider session={session} refetchOnWindowFocus={true}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
