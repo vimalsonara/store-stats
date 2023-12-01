@@ -1,14 +1,14 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@radix-ui/react-dropdown-menu";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
-import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { Input } from "@/components/ui/input";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 interface Item {
   itemName: string;
@@ -148,12 +148,15 @@ export default function PurchaseEntry() {
                 <span className="text-red-500">Date required</span>
               )}
             </div>
+            <div className="space-y-2 flex flex-col">
+              <label htmlFor="vendor">Vendor</label>
             <select
+            id="vendor"
               {...register("vendorId", { required: true })}
               className={
                 errors.vendorId
                   ? "border-2 border-red-500 rounded p-1 outline-none"
-                  : "rounded p-1 outline-none "
+                  : "rounded p-1  "
               }
               onChange={(e) => {
                 const selectedVendorId = e.target.value;
@@ -163,22 +166,25 @@ export default function PurchaseEntry() {
                 setSelectedVendorName(selectedVendor?.vendorName || "");
               }}
             >
-              <option value="">Select</option>
+              <option value="">Select Vendor</option>
               {vendorList.map((vendor) => (
                 <option key={vendor.id} value={vendor.id}>
                   {vendor.vendorName}
                 </option>
               ))}
             </select>
+
             {errors.vendorId && (
               <span className="text-red-500">Vendor required</span>
             )}
-
+            </div>
+            <div className="space-y-2">
+            <label htmlFor="">Product</label>
             {fields.map((item, index) => (
               <div key={item.id} className="flex gap-2 flex-wrap">
                 <select
                   {...register(`items.${index}.itemName`)}
-                  className={"rounded p-1 outline-none "}
+                  className={"rounded p-1"}
                 >
                   <option value="">Select</option>
                   {productList.map((product) => (
@@ -192,7 +198,7 @@ export default function PurchaseEntry() {
                   placeholder="Quantity"
                   step="1"
                   min="1"
-                  className={"rounded p-1 outline-none "}
+                  className={"rounded p-1"}
                   {...register(`items.${index}.quantity`, { required: true })}
                   onChange={(e) =>
                     handleQuantityChange(index, parseInt(e.target.value))
@@ -203,7 +209,7 @@ export default function PurchaseEntry() {
                   step="1"
                   min="1"
                   placeholder="Price"
-                  className={"rounded p-1 outline-none"}
+                  className={"rounded p-1"}
                   {...register(`items.${index}.price`, { required: true })}
                   onChange={(e) =>
                     handlePriceChange(index, parseInt(e.target.value))
@@ -219,6 +225,7 @@ export default function PurchaseEntry() {
                 )}
               </div>
             ))}
+            </div>
             <div className="flex justify-center items-center gap-2">
               {totalAmount.toString()}
               <button
