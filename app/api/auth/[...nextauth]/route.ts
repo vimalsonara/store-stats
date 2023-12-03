@@ -4,6 +4,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
+
+export type LoginTypes = z.infer<typeof loginSchema>;
 
 interface User {
   id: string;
@@ -21,7 +29,13 @@ export const authOptions: NextAuthOptions = {
         password: {},
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials) {
+          return null;
+        }
+
+        const parsedResponse = loginSchema.safeParse(credentials);
+
+        if (!parsedResponse.success) {
           return null;
         }
 
