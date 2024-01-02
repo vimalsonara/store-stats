@@ -1,20 +1,6 @@
-import { db } from "@/lib/firebaseConfig";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  query,
-  serverTimestamp,
-  where,
-} from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-
-interface Users {
-  id: string;
-  name: string;
-  email: string;
-}
+import db from "@/config/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,24 +11,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json("Any details can't be empty", { status: 400 });
     }
 
-    const userRef = collection(db, "users");
-    const emailCondition = where("email", "==", email);
-    const q = query(userRef, emailCondition);
-    if (!email || !password || !name) {
-      return NextResponse.json("Any details can't be empty", { status: 400 });
-    }
+    const userExist = await db.user.findUnique({ where: { email } });
 
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
+    if (!userExist) {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const createdAt = serverTimestamp();
-      const newUser = await addDoc(userRef, {
-        name,
-        email,
-        password: hashedPassword,
-        createdAt,
+
+      const newUser = await db.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+        },
       });
+
       return NextResponse.json("User created successfully", { status: 201 });
     } else {
       return NextResponse.json(
