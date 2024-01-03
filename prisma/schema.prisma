@@ -39,6 +39,7 @@ model Product {
 
 model Purchase {
   id Int @id @default(autoincrement())
+  date String
   user User @relation(fields: [userId], references: [id])
   userId Int
   vendor Vendor @relation(fields: [vendorId], references: [id])
