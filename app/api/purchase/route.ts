@@ -28,14 +28,22 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const newPurchase = await db.purchase.create({
+      // Convert string values to numbers for each item
+      const convertedItems = items.map((item: any) => ({
+        itemName: item.itemName,
+        quantity: parseInt(item.quantity),
+        price: parseFloat(item.price),
+        productId: parseInt(item.productId),
+      }));
+
+      await db.purchase.create({
         data: {
           date: date,
           userId: parseInt(userId),
           vendorId: parseInt(vendorId),
           vendorName: vendorName,
           totalAmount: parseFloat(totalAmount),
-          items: items,
+          items: { create: convertedItems },
         },
       });
 
