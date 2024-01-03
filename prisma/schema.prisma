@@ -45,7 +45,7 @@ model Purchase {
   vendor Vendor @relation(fields: [vendorId], references: [id])
   vendorId Int
   vendorName String
-  totalAmount Int 
+  totalAmount Float 
   items ProductPurchase[]
 }
 
@@ -53,6 +53,9 @@ model ProductPurchase {
   id Int @id @default(autoincrement())
   product Product @relation(fields: [productId], references: [id])
   productId Int
+  itemName   String
+  price      Float
+  quantity   Int
   purchase Purchase @relation(fields: [purchaseId], references: [id])
   purchaseId Int
 }
