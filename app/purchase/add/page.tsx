@@ -14,7 +14,7 @@ interface Item {
 }
 
 interface Vendor {
-  id: string;
+  id: number;
   vendorName: string;
 }
 
@@ -102,13 +102,24 @@ export default function PurchaseEntry() {
   console.log(totalAmount);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
+      const itemsWithProductId = data.items.map((item) => {
+        const selectedProduct = productList.find(
+          (product) => product.product === item.itemName
+        );
+        const productId = selectedProduct?.id;
+        return {
+          ...item,
+          productId: productId,
+        };
+      });
+
       const response = await axios.post("/api/purchase", {
         date: data.date,
         userId: session?.user.id,
         vendorId: data.vendorId,
         vendorName: selectedVendorName,
         totalAmount,
-        items: data.items,
+        items: itemsWithProductId,
       });
       if (response.status === 201) {
         toast.success("Vendor created successfully.");
@@ -148,7 +159,7 @@ export default function PurchaseEntry() {
           onChange={(e) => {
             const selectedVendorId = e.target.value;
             const selectedVendor = vendorList.find(
-              (vendor) => vendor.id === selectedVendorId
+              (vendor) => vendor.id === parseInt(selectedVendorId)
             );
             setSelectedVendorName(selectedVendor?.vendorName || "");
           }}
