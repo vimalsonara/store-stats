@@ -1,9 +1,8 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import { addDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
 import { Purchase } from "@/types/types";
+import db from "@/config/db";
 
 // add new purchase
 export async function POST(req: NextRequest) {
@@ -29,14 +28,15 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const purchaseRef = collection(db, "purchaseEntries");
-      const newPurchase = await addDoc(purchaseRef, {
-        date,
-        userId,
-        vendorId,
-        vendorName,
-        totalAmount,
-        items,
+      const newPurchase = await db.purchase.create({
+        data: {
+          date: date,
+          userId: parseInt(userId),
+          vendorId: parseInt(vendorId),
+          vendorName: vendorName,
+          totalAmount: parseFloat(totalAmount),
+          items: items,
+        },
       });
 
       return NextResponse.json(
@@ -62,27 +62,16 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const purchaseId = searchParams.get("id");
 
-      const purchaseRef = collection(db, "purchaseEntries");
-      const snapshot = await getDocs(purchaseRef);
-      const purchaseList: Purchase[] = [];
+      if (!purchaseId) {
+        return NextResponse.json(
+          { error: "Purchase id is required." },
+          { status: 400 }
+        );
+      }
 
-      snapshot.docs.forEach((doc) => {
-        const purchaseData = doc.data();
-        const currentPurchase: Purchase = {
-          id: doc.id,
-          date: purchaseData.date,
-          totalAmount: purchaseData.totalAmount,
-          userId: purchaseData.userId,
-          vendorId: purchaseData.vendorId,
-          vendorName: purchaseData.vendorName,
-          items: purchaseData.items,
-        };
-        purchaseList.push(currentPurchase);
+      const purchase = await db.purchase.findUnique({
+        where: { id: parseInt(purchaseId) },
       });
-
-      const purchase = purchaseList.find(
-        (purchaseItem) => purchaseItem.id === purchaseId
-      );
 
       if (purchase) {
         return NextResponse.json(purchase, { status: 200 });

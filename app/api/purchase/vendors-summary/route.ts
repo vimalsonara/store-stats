@@ -1,9 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
-import { Purchase, Vendor } from "@/types/types";
+import db from "@/config/db";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -13,57 +11,39 @@ export async function GET(req: NextRequest) {
     const userId = searchParams.get("userId");
 
     if (userId !== null) {
-      const vendorsRef = collection(db, "vendors");
-      const vendorQuery = query(vendorsRef, where("userId", "==", userId));
-      const vendorQuerySnapshot = await getDocs(vendorQuery);
-      const vendorList: Vendor[] = [];
+      try {
+        const vendorList = await db.vendor.findMany({
+          where: { userId: parseInt(userId) },
+        });
 
-      const purchaseRef = collection(db, "purchaseEntries");
-      const purchaseQuery = query(purchaseRef, where("userId", "==", userId));
-      const purchaseQuerysnapshot = await getDocs(purchaseQuery);
-      const purchaseList: Purchase[] = [];
+        const purchaseList = await db.purchase.findMany({
+          where: { userId: parseInt(userId) },
+        });
 
-      vendorQuerySnapshot.forEach((doc) => {
-        const vendorData = doc.data();
-        const vendor: Vendor = {
-          id: doc.id,
-          vendorName: vendorData.vendorName,
-          userId: vendorData.userId,
-          mobile: vendorData.mobile,
-        };
-        vendorList.push(vendor);
-      });
+        if (vendorList.length > 0) {
+          const vendorSummary = await Promise.all(
+            vendorList.map(async (vendor) => {
+              const currentVendorsTotal = await db.purchase.aggregate({
+                where: { vendorId: vendor.id },
+                _sum: { totalAmount: true },
+              });
 
-      purchaseQuerysnapshot.docs.forEach((doc) => {
-        const purchaseData = doc.data();
-        const currentPurchase: Purchase = {
-          id: doc.id,
-          date: purchaseData.date,
-          totalAmount: purchaseData.totalAmount,
-          userId: purchaseData.userId,
-          vendorId: purchaseData.vendorId,
-          vendorName: purchaseData.vendorName,
-          items: purchaseData.items,
-        };
-        purchaseList.push(currentPurchase);
-      });
+              return {
+                vendorName: vendor.vendorName,
+                amount: currentVendorsTotal._sum?.totalAmount || 0,
+              };
+            })
+          );
 
-      if (vendorList.length > 0) {
-        const vendorSummary = [];
-
-        for (let i = 0; i < vendorList.length; i++) {
-          const currentVendorsTotal = purchaseList
-            .filter((purchase) => purchase.vendorId === vendorList[i].id)
-            .reduce((acc, currPurchase) => acc + currPurchase.totalAmount, 0);
-
-          const total = {
-            vendorName: vendorList[i].vendorName,
-            amount: currentVendorsTotal,
-          };
-          vendorSummary.push(total);
+          return NextResponse.json(vendorSummary, { status: 200 });
+        } else {
+          return NextResponse.json("No vendors found for the user", {
+            status: 404,
+          });
         }
-
-        return NextResponse.json(vendorSummary, { status: 200 });
+      } catch (error) {
+        console.error("Error retrieving data:", error);
+        return NextResponse.json("Internal server error", { status: 500 });
       }
     } else {
       return NextResponse.json("User can't be empty", { status: 400 });
