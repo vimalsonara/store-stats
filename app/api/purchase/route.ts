@@ -79,6 +79,7 @@ export async function GET(req: NextRequest) {
 
       const purchase = await db.purchase.findUnique({
         where: { id: parseInt(purchaseId) },
+        include: { items: true },
       });
 
       if (purchase) {
