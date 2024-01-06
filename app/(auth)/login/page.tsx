@@ -1,18 +1,20 @@
 "use client";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { LoginTypes } from "@/app/api/auth/[...nextauth]/route";
+
+type Inputs = {
+  email: string
+  password: string
+}
 
 export default function Login() {
-  const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginTypes>();
-  const onSubmit: SubmitHandler<LoginTypes> = async (data) => {
+  } = useForm<Inputs>();
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log(data);
 
     await signIn("credentials", { ...data, redirect: true, callbackUrl: "/" });
