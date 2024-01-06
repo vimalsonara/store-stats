@@ -20,83 +20,94 @@ export default function Home() {
   const [vendorSummary, setVendorSummary] = useState([]);
 
   useEffect(() => {
+    const getVendors = async () => {
+      try {
+        const vendors = await axios.post("/api/vendor/list", {
+          userId: session?.user.id,
+        });
+        if (vendors.data) {
+          setVendorList(vendors.data);
+        } else {
+          setVendorList([]);
+        }
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    };
+    const getProducts = async () => {
+      try {
+        const products = await axios.post("/api/product/list", {
+          userId: session?.user.id,
+        });
+        if (products.data) {
+          setProductList(products.data);
+        } else {
+          setProductList([]);
+        }
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    };
+    const getPurchases = async () => {
+      try {
+        const purchases = await axios.post("/api/purchase/list", {
+          userId: session?.user.id,
+        });
+
+        if (purchases.data) {
+          setPurchaseList(purchases.data);
+        } else {
+          setPurchaseList([]);
+        }
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    };
+
+    const getLastSevenDaysPurchase = async () => {
+      try {
+        const today = new Date();
+        const todayFormatted = today.toISOString().split("T")[0];
+        const lastSevenDaysData = await axios.get(
+          "/api/purchase/week-summary?today=" + todayFormatted
+        );
+        if (lastSevenDaysData) {
+          setLastSevenDaysPurchase(lastSevenDaysData.data);
+        }
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    };
+
+    const getVendorSummary = async () => {
+      try {
+        const vendorSummaryData = await axios.get(
+          "/api/purchase/vendors-summary?userId=" + session?.user.id
+        );
+        if (vendorSummaryData) {
+          setVendorSummary(vendorSummaryData.data);
+        }
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        await Promise.all([
+          getVendors(),
+          getProducts(),
+          getPurchases(),
+          getLastSevenDaysPurchase(),
+          getVendorSummary(),
+        ]);
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    };
+
     if (session?.user.id) {
-      const getVendors = async () => {
-        try {
-          const vendors = await axios.post("/api/vendor/list", {
-            userId: session?.user.id,
-          });
-          if (vendors.data) {
-            setVendorList(vendors.data);
-          } else {
-            setVendorList([]);
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-      const getProducts = async () => {
-        try {
-          const products = await axios.post("/api/product/list", {
-            userId: session?.user.id,
-          });
-          if (products.data) {
-            setProductList(products.data);
-          } else {
-            setProductList([]);
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-      const getPurchases = async () => {
-        try {
-          const purchases = await axios.post("/api/purchase/list", {
-            userId: session?.user.id,
-          });
-
-          if (purchases.data) {
-            setPurchaseList(purchases.data);
-          } else {
-            setPurchaseList([]);
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-
-      const getLastSevenDaysPurchase = async () => {
-        try {
-          const today = new Date();
-          const todayFormatted = today.toISOString().split("T")[0];
-          const lastSevenDaysData = await axios.get(
-            "/api/purchase/week-summary?today=" + todayFormatted
-          );
-          if (lastSevenDaysData) {
-            setLastSevenDaysPurchase(lastSevenDaysData.data);
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-
-      const getVendorSummary = async () => {
-        try {
-          const vendorSummaryData = await axios.get(
-            "/api/purchase/vendors-summary?userId=" + session?.user.id
-          );
-          if (vendorSummaryData) {
-            setVendorSummary(vendorSummaryData.data);
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-      getVendors();
-      getProducts();
-      getPurchases();
-      getLastSevenDaysPurchase();
-      getVendorSummary();
+      fetchData();
     }
   }, [session]);
 

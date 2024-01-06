@@ -1,9 +1,8 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
 import { Purchase } from "@/types/types";
+import db from "@/config/db";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -12,27 +11,9 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { userId } = reqBody;
 
-      const purchaseRef = collection(db, "purchaseEntries");
-      const snapshot = await getDocs(purchaseRef);
-      const purchaseList: Purchase[] = [];
-
-      snapshot.docs.forEach((doc) => {
-        const purchaseData = doc.data();
-        const currentPurchase: Purchase = {
-          id: doc.id,
-          date: purchaseData.date,
-          totalAmount: purchaseData.totalAmount,
-          userId: purchaseData.userId,
-          vendorId: purchaseData.vendorId,
-          vendorName: purchaseData.vendorName,
-          items: purchaseData.items,
-        };
-        purchaseList.push(currentPurchase);
+      const currentUsersPurchase = await db.purchase.findMany({
+        where: { userId: parseInt(userId) },
       });
-
-      const currentUsersPurchase = purchaseList.filter(
-        (purchase) => purchase.userId === userId
-      );
 
       if (currentUsersPurchase.length > 0) {
         return NextResponse.json(currentUsersPurchase, { status: 200 });
@@ -61,27 +42,16 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const vendorId = searchParams.get("id");
 
-      const purchaseRef = collection(db, "purchaseEntries");
-      const snapshot = await getDocs(purchaseRef);
-      const purchaseList: Purchase[] = [];
+      if (!vendorId) {
+        return NextResponse.json(
+          { error: "No vendor id provided" },
+          { status: 400 }
+        );
+      }
 
-      snapshot.docs.forEach((doc) => {
-        const purchaseData = doc.data();
-        const currentPurchase: Purchase = {
-          id: doc.id,
-          date: purchaseData.date,
-          totalAmount: purchaseData.totalAmount,
-          userId: purchaseData.userId,
-          vendorId: purchaseData.vendorId,
-          vendorName: purchaseData.vendorName,
-          items: purchaseData.items,
-        };
-        purchaseList.push(currentPurchase);
+      const currentVendorPurchases = await db.purchase.findMany({
+        where: { vendorId: parseInt(vendorId) },
       });
-
-      const currentVendorPurchases = purchaseList.filter(
-        (purchase) => purchase.vendorId === vendorId
-      );
 
       if (currentVendorPurchases.length > 0) {
         return NextResponse.json(currentVendorPurchases, { status: 200 });

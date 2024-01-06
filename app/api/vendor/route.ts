@@ -1,14 +1,7 @@
+import db from "@/config/db";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  serverTimestamp,
-} from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
-import { Vendor } from "@/types/types";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -17,38 +10,24 @@ export async function POST(req: NextRequest) {
       const reqBody = await req.json();
       const { vendorName, mobile, userId } = reqBody;
 
-      const vendorsRef = collection(db, "vendors");
-
-      const snapshot = await getDocs(vendorsRef);
-      const vendors: Vendor[] = [];
-
-      snapshot.docs.forEach((doc) => {
-        const vendorData = doc.data();
-        const currentVendor: Vendor = {
-          vendorName: vendorData.vendorName,
-          mobile: vendorData.mobile,
-          userId: vendorData.userId,
-          id: vendorData.id,
-        };
-        vendors.push(currentVendor);
+      const vendorExist = await db.vendor.findFirst({
+        where: { vendorName: vendorName, userId: parseInt(userId) },
       });
-      console.log(vendors);
-      const vendorExist = vendors.find(
-        (v) => v.vendorName === vendorName && v.userId === userId
-      );
+
       if (vendorExist) {
         return NextResponse.json(
           { error: "Vendor already exists." },
           { status: 400 }
         );
       } else {
-        const createdAt = serverTimestamp();
-        const newVendor = await addDoc(vendorsRef, {
-          vendorName,
-          mobile,
-          userId,
-          createdAt,
+        const newVendor = await db.vendor.create({
+          data: {
+            vendorName: vendorName,
+            mobile: mobile,
+            userId: parseInt(userId),
+          },
         });
+
         return NextResponse.json(
           { messagge: "New Vendor Created." },
           { status: 201 }

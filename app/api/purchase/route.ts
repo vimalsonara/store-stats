@@ -1,9 +1,8 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
-import { addDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
 import { Purchase } from "@/types/types";
+import db from "@/config/db";
 
 // add new purchase
 export async function POST(req: NextRequest) {
@@ -29,14 +28,23 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const purchaseRef = collection(db, "purchaseEntries");
-      const newPurchase = await addDoc(purchaseRef, {
-        date,
-        userId,
-        vendorId,
-        vendorName,
-        totalAmount,
-        items,
+      // Convert string values to numbers for each item
+      const convertedItems = items.map((item: any) => ({
+        itemName: item.itemName,
+        quantity: parseInt(item.quantity),
+        price: parseFloat(item.price),
+        productId: parseInt(item.productId),
+      }));
+
+      await db.purchase.create({
+        data: {
+          date: date,
+          userId: parseInt(userId),
+          vendorId: parseInt(vendorId),
+          vendorName: vendorName,
+          totalAmount: parseFloat(totalAmount),
+          items: { create: convertedItems },
+        },
       });
 
       return NextResponse.json(
@@ -62,27 +70,17 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       const purchaseId = searchParams.get("id");
 
-      const purchaseRef = collection(db, "purchaseEntries");
-      const snapshot = await getDocs(purchaseRef);
-      const purchaseList: Purchase[] = [];
+      if (!purchaseId) {
+        return NextResponse.json(
+          { error: "Purchase id is required." },
+          { status: 400 }
+        );
+      }
 
-      snapshot.docs.forEach((doc) => {
-        const purchaseData = doc.data();
-        const currentPurchase: Purchase = {
-          id: doc.id,
-          date: purchaseData.date,
-          totalAmount: purchaseData.totalAmount,
-          userId: purchaseData.userId,
-          vendorId: purchaseData.vendorId,
-          vendorName: purchaseData.vendorName,
-          items: purchaseData.items,
-        };
-        purchaseList.push(currentPurchase);
+      const purchase = await db.purchase.findUnique({
+        where: { id: parseInt(purchaseId) },
+        include: { items: true },
       });
-
-      const purchase = purchaseList.find(
-        (purchaseItem) => purchaseItem.id === purchaseId
-      );
 
       if (purchase) {
         return NextResponse.json(purchase, { status: 200 });

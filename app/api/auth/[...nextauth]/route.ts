@@ -1,24 +1,8 @@
-import NextAuth from "next-auth";
-import type { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { db } from "@/lib/firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import db from "@/config/db";
 import bcrypt from "bcryptjs";
-import { z } from "zod";
-
-const loginSchema = z.object({
-  email: z.string(),
-  password: z.string(),
-});
-
-export type LoginTypes = z.infer<typeof loginSchema>;
-
-interface User {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-}
+import type { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -29,33 +13,13 @@ export const authOptions: NextAuthOptions = {
         password: {},
       },
       async authorize(credentials) {
-        if (!credentials) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
-        const parsedResponse = loginSchema.safeParse(credentials);
-
-        if (!parsedResponse.success) {
-          return null;
-        }
-
-        const userRef = collection(db, "users");
-        let users: User[] = [];
-
-        const snapshot = await getDocs(userRef);
-
-        snapshot.docs.forEach((doc) => {
-          const userData = doc.data();
-          const user: User = {
-            id: doc.id,
-            email: userData.email,
-            password: userData.password,
-            name: userData.name,
-          };
-          users.push(user);
+        const user = await db.user.findUnique({
+          where: { email: credentials.email },
         });
-
-        const user = users.find((user) => user.email === credentials.email);
 
         if (!user) {
           return null;
@@ -69,32 +33,17 @@ export const authOptions: NextAuthOptions = {
         if (!passwordMatch) {
           return null;
         }
-        return user;
+        const { id, email, name, password } = user;
+        return { id: id.toString(), email, name, password };
       },
     }),
   ],
   callbacks: {
     async session({ session }) {
-      const userRef = collection(db, "users");
-      let users: User[] = [];
-
       try {
-        const snapshot = await getDocs(userRef);
-
-        snapshot.docs.forEach((doc) => {
-          const userData = doc.data();
-          const user: User = {
-            id: doc.id,
-            email: userData.email,
-            name: userData.name,
-            password: userData.password,
-          };
-          users.push(user);
+        const sessionUser = await db.user.findUnique({
+          where: { email: session.user.email },
         });
-
-        const sessionUser = users.find(
-          (user) => user.email === session.user.email
-        );
 
         if (sessionUser) {
           session.user.id = sessionUser.id.toString();
