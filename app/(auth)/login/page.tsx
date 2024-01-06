@@ -2,11 +2,7 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-
-type Inputs = {
-  email: string;
-  password: string;
-};
+import { LoginTypes } from "@/app/api/auth/[...nextauth]/route";
 
 export default function Login() {
   const router = useRouter();
@@ -15,15 +11,15 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  } = useForm<LoginTypes>();
+  const onSubmit: SubmitHandler<LoginTypes> = async (data) => {
     console.log(data);
 
     await signIn("credentials", { ...data, redirect: true, callbackUrl: "/" });
   };
 
   return (
-    <div className="flex min-h-screen w-screen flex-col items-center justify-center">
+    <div className="flex w-full h-screen items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-2 border p-5 rounded-lg"
